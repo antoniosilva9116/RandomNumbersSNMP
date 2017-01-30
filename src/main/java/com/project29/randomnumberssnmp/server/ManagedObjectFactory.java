@@ -6,7 +6,7 @@
 package com.project29.randomnumberssnmp.server;
 
 import org.snmp4j.agent.mo.MOScalar;
-import sun.security.jca.GetInstance;
+import org.snmp4j.agent.mo.MOTable;
 
 /**
  *
@@ -50,5 +50,13 @@ public class ManagedObjectFactory {
 
             agent.registerManagedObject(mOScalars[i]);
         }
+    }
+
+    public void createManagedObjects(MOTable mOTable) {
+
+        
+        
+        agent.registerManagedObject(mOTable);
+
     }
 }

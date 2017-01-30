@@ -6,6 +6,10 @@
 package com.project29.randomnumberssnmp.client;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import static java.util.Collections.list;
+import java.util.List;
+import static jdk.nashorn.internal.runtime.regexp.joni.Syntax.Java;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
@@ -19,6 +23,9 @@ import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
+import org.snmp4j.util.DefaultPDUFactory;
+import org.snmp4j.util.TableEvent;
+import org.snmp4j.util.TableUtils;
 
 /**
  *
@@ -54,12 +61,35 @@ public class SNMPManager {
      * as a String.
      *
      * @param oid
-     * @return 
+     * @return
      * @throws IOException
      */
     public String getAsString(OID oid) throws IOException {
         ResponseEvent event = get(new OID[]{oid});
         return event.getResponse().get(0).getVariable().toString();
+    }
+
+    /**
+     * Normally this would return domain objects or something else than this...
+     */
+    public List<List<String>> getTableAsStrings(OID[] oids) {
+        TableUtils tUtils = new TableUtils(snmp, new DefaultPDUFactory());
+
+        @SuppressWarnings("unchecked")
+        List<TableEvent> events = tUtils.getTable(getTarget(), oids, null, null);
+
+        List<List<String>> list = new ArrayList<List<String>>();
+        for (TableEvent event : events) {
+            if (event.isError()) {
+                throw new RuntimeException(event.getErrorMessage());
+            }
+            List<String> strList = new ArrayList<String>();
+            list.add(strList);
+            for (VariableBinding vb : event.getColumns()) {
+                strList.add(vb.getVariable().toString());
+            }
+        }
+        return list;
     }
 
     /**
@@ -97,6 +127,10 @@ public class SNMPManager {
         target.setTimeout(1500);
         target.setVersion(SnmpConstants.version2c);
         return target;
+    }
+
+    public static String extractSingleString(ResponseEvent event) {
+        return event.getResponse().get(0).getVariable().toString();
     }
 
 }

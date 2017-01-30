@@ -10,6 +10,8 @@ import com.project29.randomnumberssnmp.conf.UnpredictableConf;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.snmp4j.TransportMapping;
 import org.snmp4j.agent.BaseAgent;
@@ -161,19 +163,6 @@ public class SNMPAgent extends BaseAgent {
 
         communityMIB.getSnmpCommunityEntry().addRow((SnmpCommunityMIB.SnmpCommunityEntryRow) row1);
 
-//        Variable[] com2sec = new Variable[]{new OctetString("public"),
-//            new OctetString("cpublic"), // security name
-//            getAgent().getContextEngineID(), // local engine ID
-//            new OctetString("public"), // default context name
-//            new OctetString(), // transport tag
-//            new Integer32(StorageType.nonVolatile), // storage type
-//            new Integer32(RowStatus.active) // row status
-//    };
-//
-//        MOTableRow row1 = communityMIB.getSnmpCommunityEntry().createRow(
-//                new OctetString("public2public").toSubIndex(true), com2sec);
-//
-//        communityMIB.getSnmpCommunityEntry().addRow((SnmpCommunityMIB.SnmpCommunityEntryRow) row1);
     }
 
     protected void initTransportMappings() throws IOException {
@@ -213,7 +202,7 @@ public class SNMPAgent extends BaseAgent {
      */
     public void registerManagedObject(ManagedObject mo) {
         try {
-            server.register(mo, null);
+            server.register(mo, new OctetString(unpredictableConf.getComunityString()));
         } catch (DuplicateRegistrationException ex) {
             throw new RuntimeException(ex);
         }
@@ -222,4 +211,6 @@ public class SNMPAgent extends BaseAgent {
     public void unregisterManagedObject(MOGroup moGroup) {
         moGroup.unregisterMOs(server, getContext(moGroup));
     }
+
+
 }
