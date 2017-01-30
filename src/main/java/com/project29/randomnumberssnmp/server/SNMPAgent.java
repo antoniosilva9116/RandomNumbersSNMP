@@ -77,8 +77,6 @@ public class SNMPAgent extends BaseAgent {
         this.address = address;
     }
 
-    
-    
     public SNMPAgent(String address, UnpredictableConf unpredictableConf) throws IOException {
 
         /**
@@ -156,7 +154,7 @@ public class SNMPAgent extends BaseAgent {
             new OctetString(), // transport tag
             new Integer32(StorageType.nonVolatile), // storage type
             new Integer32(RowStatus.active) // row status
-        };
+    };
 
         MOTableRow row1 = communityMIB.getSnmpCommunityEntry().createRow(
                 new OctetString(unpredictableConf.getComunityString() + "2" + unpredictableConf.getComunityString()).toSubIndex(true), com2sec);

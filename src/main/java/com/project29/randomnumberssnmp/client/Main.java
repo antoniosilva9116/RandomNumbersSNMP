@@ -7,6 +7,7 @@ package com.project29.randomnumberssnmp.client;
 
 import com.project29.randomnumberssnmp.conf.UnpredictableConf;
 import com.project29.randomnumberssnmp.server.ManagedObjectCreator;
+import com.project29.randomnumberssnmp.server.ManagedObjectFactory;
 import com.project29.randomnumberssnmp.server.SNMPAgent;
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +27,7 @@ public class Main {
 
     static final OID sysDescr = new OID(".1.3.6.1.2.1.1.3.0");
     static final UnpredictableConf UNPREDICTABLE_CONF = new UnpredictableConf();
+    static ManagedObjectFactory factory;
 
     public static void main(String[] args) throws IOException {
 
@@ -33,24 +35,23 @@ public class Main {
 
         SNMPAgent agent = new SNMPAgent("0.0.0.0/" + UNPREDICTABLE_CONF.getUdpPort(), UNPREDICTABLE_CONF);
 
+        factory = ManagedObjectFactory.getInstance(agent);
+        
         try {
             agent.start();
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        MOScalar[] mOScalars = ManagedObjectCreator.createUnpredictableParamMIB(
-                UNPREDICTABLE_CONF.getRefreshRate(),
-                UNPREDICTABLE_CONF.getTableSize(),
-                UNPREDICTABLE_CONF.getNumberSize(),
-                " "
+        factory.createManagedObjects(
+                ManagedObjectCreator.createUnpredictableParamMIB(
+                        UNPREDICTABLE_CONF.getRefreshRate(),
+                        UNPREDICTABLE_CONF.getTableSize(),
+                        UNPREDICTABLE_CONF.getNumberSize(),
+                        " "
+                )
         );
-//        agent.unregisterManagedObject(agent.getSnmpv2MIB());
-        
-        for (int i = 0; i < mOScalars.length; i++) {
-            agent.registerManagedObject(mOScalars[i]);
-        }
-        
+
         // Setup the client to use our newly started agent
         SNMPManager client = new SNMPManager("udp:127.0.0.1/" + UNPREDICTABLE_CONF.getUdpPort(), agent.getUnpredictableConf().getComunityString());
 
