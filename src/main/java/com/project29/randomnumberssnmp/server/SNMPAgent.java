@@ -53,6 +53,32 @@ public class SNMPAgent extends BaseAgent {
         mapTable = new MapTable();
     }
 
+    public UnpredictableConf getUnpredictableConf() {
+        return unpredictableConf;
+    }
+
+    public void setUnpredictableConf(UnpredictableConf unpredictableConf) {
+        this.unpredictableConf = unpredictableConf;
+    }
+
+    public MapTable getMapTable() {
+        return mapTable;
+    }
+
+    public void setMapTable(MapTable mapTable) {
+        this.mapTable = mapTable;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    
+    
     public SNMPAgent(String address) throws IOException {
 
         /**
@@ -130,13 +156,26 @@ public class SNMPAgent extends BaseAgent {
             new OctetString(), // transport tag
             new Integer32(StorageType.nonVolatile), // storage type
             new Integer32(RowStatus.active) // row status
-    };
+        };
 
         MOTableRow row1 = communityMIB.getSnmpCommunityEntry().createRow(
                 new OctetString(unpredictableConf.getComunityString() + "2" + unpredictableConf.getComunityString()).toSubIndex(true), com2sec);
 
         communityMIB.getSnmpCommunityEntry().addRow((SnmpCommunityMIB.SnmpCommunityEntryRow) row1);
 
+//        Variable[] com2sec = new Variable[]{new OctetString("public"),
+//            new OctetString("cpublic"), // security name
+//            getAgent().getContextEngineID(), // local engine ID
+//            new OctetString("public"), // default context name
+//            new OctetString(), // transport tag
+//            new Integer32(StorageType.nonVolatile), // storage type
+//            new Integer32(RowStatus.active) // row status
+//    };
+//
+//        MOTableRow row1 = communityMIB.getSnmpCommunityEntry().createRow(
+//                new OctetString("public2public").toSubIndex(true), com2sec);
+//
+//        communityMIB.getSnmpCommunityEntry().addRow((SnmpCommunityMIB.SnmpCommunityEntryRow) row1);
     }
 
     protected void initTransportMappings() throws IOException {

@@ -48,7 +48,7 @@ public class ManagedObjectCreator implements MOGroup {
 
     public static MOScalar createReadOnly(OID oid, Object value) {
         return new MOScalar(oid,
-                MOAccessImpl.ACCESS_READ_ONLY,
+                MOAccessImpl.ACCESS_READ_WRITE,
                 getVariable(value));
     }
 

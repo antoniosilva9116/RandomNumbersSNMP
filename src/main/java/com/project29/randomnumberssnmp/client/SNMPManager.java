@@ -28,9 +28,11 @@ public class SNMPManager {
 
     private Snmp snmp = null;
     private String address = null;
+    private String community;
 
-    public SNMPManager(String add) {
-        address = add;
+    public SNMPManager(String address, String community) {
+        this.address = address;
+        this.community = community;
     }
 
     /**
@@ -43,7 +45,7 @@ public class SNMPManager {
     void start() throws IOException {
         TransportMapping transport = new DefaultUdpTransportMapping();
         snmp = new Snmp(transport);
-// Do not forget this line!
+        // Do not forget this line!
         transport.listen();
     }
 
@@ -52,7 +54,7 @@ public class SNMPManager {
      * as a String.
      *
      * @param oid
-     * @return
+     * @return 
      * @throws IOException
      */
     public String getAsString(OID oid) throws IOException {
@@ -89,7 +91,7 @@ public class SNMPManager {
     private Target getTarget() {
         Address targetAddress = GenericAddress.parse(address);
         CommunityTarget target = new CommunityTarget();
-        target.setCommunity(new OctetString("unpredictable"));
+        target.setCommunity(new OctetString(community));
         target.setAddress(targetAddress);
         target.setRetries(2);
         target.setTimeout(1500);

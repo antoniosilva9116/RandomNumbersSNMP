@@ -22,7 +22,7 @@ import org.snmp4j.smi.OctetString;
  */
 public class Main {
 
-    static final OID sysDescr = new OID(".1.3.6.1.2.1.1.1.0");
+    static final OID sysDescr = new OID(".1.3.6.1.2.1.1.3.0");
 
     public static void main(String[] args) throws IOException {
 
@@ -34,13 +34,14 @@ public class Main {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        agent.unregisterManagedObject(agent.getSnmpv2MIB());
-
-        agent.registerManagedObject(ManagedObjectCreator.createReadOnly(sysDescr,
-                "This Description is set By ShivaSoft"));
-
+//        agent.unregisterManagedObject(agent.getSnmpv2MIB());
+//
+//        agent.registerManagedObject(ManagedObjectCreator.createReadOnly(sysDescr,
+//                "This Description is set By ShivaSoft"));
         // Setup the client to use our newly started agent
-        SNMPManager client = new SNMPManager("udp:127.0.0.1/2001");
+        SNMPManager client = new SNMPManager("udp:127.0.0.1/2001", agent.getUnpredictableConf().getComunityString());
+//        SNMPManager client = new SNMPManager("udp:127.0.0.1/2001", "public");
+
         client.start();
         // Get back Value which is set
         System.out.println(client.getAsString(sysDescr));
