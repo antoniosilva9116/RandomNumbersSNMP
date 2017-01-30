@@ -73,7 +73,7 @@ public class MapTable {
 
     @Override
     public String toString() {
-        return "MapTable{" + "table=" + tableToString() + '}';
+        return "MapTable{" + "table=\n" + tableToString() + '}';
     }
 
     public String tableToString() {
