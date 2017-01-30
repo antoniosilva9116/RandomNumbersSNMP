@@ -79,7 +79,7 @@ public class SNMPAgent extends BaseAgent {
 
     
     
-    public SNMPAgent(String address) throws IOException {
+    public SNMPAgent(String address, UnpredictableConf unpredictableConf) throws IOException {
 
         /**
          * Creates a base agent with boot-counter, config file, and a
@@ -96,7 +96,7 @@ public class SNMPAgent extends BaseAgent {
                         new OctetString(MPv3.createLocalEngineID())));
 
         this.address = address;
-        unpredictableConf = new UnpredictableConf();
+        this.unpredictableConf = unpredictableConf;
         mapTable = new MapTable();
     }
 
@@ -187,8 +187,6 @@ public class SNMPAgent extends BaseAgent {
     }
 
     public void start() throws IOException {
-
-        unpredictableConf.parseConfFile("C:\\Users\\anton\\OneDrive\\Documentos\\NetBeansProjects\\RandomNumbersSNMP\\resource\\unpredictable-conf.txt");
 
         mapTable.setLines(unpredictableConf.getTableSize());
         mapTable.setColumns(unpredictableConf.getNumberSize());

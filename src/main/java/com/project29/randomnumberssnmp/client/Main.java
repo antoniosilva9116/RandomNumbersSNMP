@@ -5,6 +5,7 @@
  */
 package com.project29.randomnumberssnmp.client;
 
+import com.project29.randomnumberssnmp.conf.UnpredictableConf;
 import com.project29.randomnumberssnmp.server.ManagedObjectCreator;
 import com.project29.randomnumberssnmp.server.SNMPAgent;
 import java.io.File;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.snmp4j.agent.CommandProcessor;
+import org.snmp4j.agent.mo.MOScalar;
 import org.snmp4j.mp.MPv3;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
@@ -23,10 +25,13 @@ import org.snmp4j.smi.OctetString;
 public class Main {
 
     static final OID sysDescr = new OID(".1.3.6.1.2.1.1.3.0");
+    static final UnpredictableConf UNPREDICTABLE_CONF = new UnpredictableConf();
 
     public static void main(String[] args) throws IOException {
 
-        SNMPAgent agent = new SNMPAgent("0.0.0.0/2001");
+        UNPREDICTABLE_CONF.parseConfFile("C:\\Users\\anton\\OneDrive\\Documentos\\NetBeansProjects\\RandomNumbersSNMP\\resource\\unpredictable-conf.txt");
+
+        SNMPAgent agent = new SNMPAgent("0.0.0.0/" + UNPREDICTABLE_CONF.getUdpPort(), UNPREDICTABLE_CONF);
 
         try {
             agent.start();
@@ -34,13 +39,20 @@ public class Main {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        MOScalar[] mOScalars = ManagedObjectCreator.createUnpredictableParamMIB(
+                UNPREDICTABLE_CONF.getRefreshRate(),
+                UNPREDICTABLE_CONF.getTableSize(),
+                UNPREDICTABLE_CONF.getNumberSize(),
+                " "
+        );
 //        agent.unregisterManagedObject(agent.getSnmpv2MIB());
-//
-//        agent.registerManagedObject(ManagedObjectCreator.createReadOnly(sysDescr,
-//                "This Description is set By ShivaSoft"));
+        
+        for (int i = 0; i < mOScalars.length; i++) {
+            agent.registerManagedObject(mOScalars[i]);
+        }
+        
         // Setup the client to use our newly started agent
-        SNMPManager client = new SNMPManager("udp:127.0.0.1/2001", agent.getUnpredictableConf().getComunityString());
-//        SNMPManager client = new SNMPManager("udp:127.0.0.1/2001", "public");
+        SNMPManager client = new SNMPManager("udp:127.0.0.1/" + UNPREDICTABLE_CONF.getUdpPort(), agent.getUnpredictableConf().getComunityString());
 
         client.start();
         // Get back Value which is set

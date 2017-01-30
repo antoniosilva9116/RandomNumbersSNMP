@@ -14,15 +14,19 @@ import org.snmp4j.agent.mo.MOAccessImpl;
 import org.snmp4j.agent.mo.MOColumn;
 import org.snmp4j.agent.mo.MOFactory;
 import org.snmp4j.agent.mo.MOMutableColumn;
+import org.snmp4j.agent.mo.MOMutableTableModel;
 import org.snmp4j.agent.mo.MOScalar;
 import org.snmp4j.agent.mo.MOTableIndex;
+import org.snmp4j.agent.mo.MOTableIndexValidator;
 import org.snmp4j.agent.mo.MOTableSubIndex;
 import org.snmp4j.agent.mo.snmp.smi.Constraint;
 import org.snmp4j.agent.mo.snmp.smi.ConstraintsImpl;
 import org.snmp4j.agent.mo.snmp.smi.ValueConstraint;
 import org.snmp4j.agent.mo.snmp.smi.ValueConstraintValidator;
+import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
+import org.snmp4j.smi.SMIConstants;
 import org.snmp4j.smi.Variable;
 
 /**
@@ -40,13 +44,24 @@ public class ManagedObjectCreator implements MOGroup {
             = new OID(new int[]{1, 3, 6, 1, 2, 1, 200, 2});
     //Scalars
     private MOScalar<OctetString> reset;
-    
+
     private MOTableSubIndex[] hostsEntryIndexes;
     private MOTableIndex hostsEntryIndex;
 
+    // Column sub-identifier definitions for hostsEntry:
+    private static final OID colR
+            = new OID(new int[]{1, 3, 6, 1, 2, 1, 200, 1, 1});
+    private static final OID colN
+            = new OID(new int[]{1, 3, 6, 1, 2, 1, 200, 1, 2});
+    private static final OID colD
+            = new OID(new int[]{1, 3, 6, 1, 2, 1, 200, 1, 3});
+    private static final OID colReset
+            = new OID(new int[]{1, 3, 6, 1, 2, 1, 200, 1, 4});
 
+    public ManagedObjectCreator() {
+    }
 
-    public static MOScalar createReadOnly(OID oid, Object value) {
+    public static MOScalar create(OID oid, Object value) {
         return new MOScalar(oid,
                 MOAccessImpl.ACCESS_READ_WRITE,
                 getVariable(value));
@@ -69,33 +84,16 @@ public class ManagedObjectCreator implements MOGroup {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void createUnpredictableParamMIB(int refreshRate, int tableSize, int numberSize) {
+    public static MOScalar[] createUnpredictableParamMIB(int r, int n, int d, String reset) {
+
+        MOScalar[] objScalars = new MOScalar[4];
         
-    }
+        objScalars[0] = ManagedObjectScalarFactory.create(colR, r, MOAccessImpl.ACCESS_READ_ONLY);
+        objScalars[1] = ManagedObjectScalarFactory.create(colN, n, MOAccessImpl.ACCESS_READ_ONLY);
+        objScalars[2] = ManagedObjectScalarFactory.create(colD, d, MOAccessImpl.ACCESS_READ_ONLY);
+        objScalars[3] = ManagedObjectScalarFactory.create(colReset, reset, MOAccessImpl.ACCESS_WRITE_ONLY);
 
-    public MOScalar createScalar(OID oid, MOAccess access, Variable value) {
-        MOScalar scalar = moFactory.createScalar(oid, access, value);
-        ValueConstraint vc = new ConstraintsImpl();
-        ((ConstraintsImpl) vc).add(new Constraint(0L, 255L));
-        scalar.addMOValueValidationListener(new ValueConstraintValidator(vc));
-        //--AgentGen BEGIN=InetAddress::createScalar
-        //--AgentGen END
-        return scalar;
-    }
-
-    public MOColumn createColumn(int columnID, int syntax, MOAccess access,
-            Variable defaultValue, boolean mutableInService) {
-        MOColumn col = moFactory.createColumn(columnID, syntax, access,
-                defaultValue, mutableInService);
-        if (col instanceof MOMutableColumn) {
-            MOMutableColumn mcol = (MOMutableColumn) col;
-            ValueConstraint vc = new ConstraintsImpl();
-            ((ConstraintsImpl) vc).add(new Constraint(0L, 255L));
-            mcol.addMOValueValidationListener(new ValueConstraintValidator(vc));
-        }
-        //--AgentGen BEGIN=InetAddress::createColumn
-        //--AgentGen END
-        return col;
+        return objScalars;
     }
 
 }
