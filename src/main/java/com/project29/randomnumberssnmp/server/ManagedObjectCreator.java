@@ -28,19 +28,19 @@ public class ManagedObjectCreator {
     private static final OID unpredictableParam
             = new OID(new int[]{1, 3, 6, 1, 2, 1, 200, 1});
     private static final OID unpredictableTable
-            = new OID(new int[]{1, 3, 6, 1, 2, 1, 204});
+            = new OID(new int[]{1, 3, 6, 1, 2, 1, 200, 2});
     //Scalars
     private MOScalar<OctetString> reset;
 
     // Column sub-identifier definitions for hostsEntry:
     private static final OID colR
-            = new OID(new int[]{1, 3, 6, 1, 2, 1, 200, 1});
+            = new OID(new int[]{1, 3, 6, 1, 2, 1, 200, 1, 1, 0});
     private static final OID colN
-            = new OID(new int[]{1, 3, 6, 1, 2, 1, 201, 1});
+            = new OID(new int[]{1, 3, 6, 1, 2, 1, 200, 1, 2, 0});
     private static final OID colD
-            = new OID(new int[]{1, 3, 6, 1, 2, 1, 202, 1});
+            = new OID(new int[]{1, 3, 6, 1, 2, 1, 200, 1, 3, 0});
     private static final OID colReset
-            = new OID(new int[]{1, 3, 6, 1, 2, 1, 203, 1});
+            = new OID(new int[]{1, 3, 6, 1, 2, 1, 200, 1, 4, 0});
 
     public ManagedObjectCreator() {
     }
@@ -56,10 +56,18 @@ public class ManagedObjectCreator {
 
         MOScalar[] objScalars = new MOScalar[4];
 
-        objScalars[0] = ManagedObjectScalarFactory.create(colR, r, MOAccessImpl.ACCESS_READ_ONLY);
-        objScalars[1] = ManagedObjectScalarFactory.create(colN, n, MOAccessImpl.ACCESS_READ_ONLY);
-        objScalars[2] = ManagedObjectScalarFactory.create(colD, d, MOAccessImpl.ACCESS_READ_ONLY);
-        objScalars[3] = ManagedObjectScalarFactory.create(colReset, reset, MOAccessImpl.ACCESS_WRITE_ONLY);
+        objScalars[0] = ManagedObjectScalarFactory.create(
+                colR, r, MOAccessImpl.ACCESS_READ_ONLY
+        );
+        objScalars[1] = ManagedObjectScalarFactory.create(
+                colN, n, MOAccessImpl.ACCESS_READ_ONLY
+        );
+        objScalars[2] = ManagedObjectScalarFactory.create(
+                colD, d, MOAccessImpl.ACCESS_READ_ONLY
+        );
+        objScalars[3] = ManagedObjectScalarFactory.create(
+                colReset, reset, MOAccessImpl.ACCESS_WRITE_ONLY
+        );
 
         return objScalars;
     }

@@ -21,8 +21,8 @@ import org.snmp4j.smi.OID;
  */
 public class Main {
 
-    static final OID unpredictableParam = new OID(".1.3.6.1.2.1.201.1");
-    static final OID unpredictableTable = new OID(".1.3.6.1.2.1.204");
+    static final OID unpredictableParam = new OID(".1.3.6.1.2.1.200.1.2.0");
+    static final OID unpredictableTable = new OID(".1.3.6.1.2.1.200.2");
 
     static final UnpredictableConf UNPREDICTABLE_CONF = new UnpredictableConf();
     static ManagedObjectFactory factory;
