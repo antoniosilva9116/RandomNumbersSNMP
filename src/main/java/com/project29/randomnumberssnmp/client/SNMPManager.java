@@ -49,7 +49,7 @@ public class SNMPManager {
      *
      * @throws IOException
      */
-    void start() throws IOException {
+    public void start() throws IOException {
         TransportMapping transport = new DefaultUdpTransportMapping();
         snmp = new Snmp(transport);
         // Do not forget this line!

@@ -52,11 +52,8 @@ public class ManagedObjectFactory {
         }
     }
 
-    public void createManagedObjects(MOTable mOTable) {
-
-        
+    public void createManagedObjects(MOTable mOTable) {   
         
         agent.registerManagedObject(mOTable);
-
     }
 }

@@ -5,6 +5,7 @@
  */
 package com.project29.randomnumberssnmp.server;
 
+import com.project29.randomnumberssnmp.conf.UnpredictableConf;
 import org.snmp4j.agent.mo.DefaultMOFactory;
 import org.snmp4j.agent.mo.MOAccessImpl;
 import org.snmp4j.agent.mo.MOFactory;
@@ -29,10 +30,9 @@ public class ManagedObjectCreator {
             = new OID(new int[]{1, 3, 6, 1, 2, 1, 200, 1});
     private static final OID unpredictableTable
             = new OID(new int[]{1, 3, 6, 1, 2, 1, 200, 2});
-    //Scalars
-    private MOScalar<OctetString> reset;
+    private UnpredictableConf conf;
 
-    // Column sub-identifier definitions for hostsEntry:
+    // Scalars
     private static final OID colR
             = new OID(new int[]{1, 3, 6, 1, 2, 1, 200, 1, 1, 0});
     private static final OID colN
@@ -45,6 +45,10 @@ public class ManagedObjectCreator {
     public ManagedObjectCreator() {
     }
 
+    public ManagedObjectCreator(UnpredictableConf conf) {
+        this.conf = conf;
+    }
+
     private static Variable getVariable(Object value) {
         if (value instanceof String) {
             return new OctetString((String) value);
@@ -52,7 +56,7 @@ public class ManagedObjectCreator {
         throw new IllegalArgumentException("Unmanaged Type: " + value.getClass());
     }
 
-    public static MOScalar[] createUnpredictableParamMIB(int r, int n, int d, String reset) {
+    public static MOScalar[] createUnpredictableParamMIB(int r, int n, int d) {
 
         MOScalar[] objScalars = new MOScalar[4];
 
@@ -66,7 +70,7 @@ public class ManagedObjectCreator {
                 colD, d, MOAccessImpl.ACCESS_READ_ONLY
         );
         objScalars[3] = ManagedObjectScalarFactory.create(
-                colReset, reset, MOAccessImpl.ACCESS_WRITE_ONLY
+                colReset, " ", MOAccessImpl.ACCESS_READ_WRITE
         );
 
         return objScalars;

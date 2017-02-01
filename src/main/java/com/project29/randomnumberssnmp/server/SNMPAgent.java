@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.snmp4j.TransportMapping;
 import org.snmp4j.agent.BaseAgent;
@@ -193,6 +195,7 @@ public class SNMPAgent extends BaseAgent {
         finishInit();
         run();
         sendColdStartNotification();
+        createMIBs();
     }
 
     /**
@@ -212,5 +215,38 @@ public class SNMPAgent extends BaseAgent {
         moGroup.unregisterMOs(server, getContext(moGroup));
     }
 
+    public void reset(String confKey, String confFilePath) {
+        try {
+            unpredictableConf.parseConfFile(confFilePath);
+        } catch (IOException ex) {
+            Logger.getLogger(SNMPAgent.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        ManagedObjectFactory factory = ManagedObjectFactory.getInstance(this);
+
+        factory.createManagedObjects(
+                ManagedObjectCreator.createUnpredictableTableMIB(
+                        mapTable.getTable()
+                )
+        );
+    }
+
+    private void createMIBs() {
+        ManagedObjectFactory factory = ManagedObjectFactory.getInstance(this);
+        
+        factory.createManagedObjects(
+                ManagedObjectCreator.createUnpredictableParamMIB(
+                        unpredictableConf.getRefreshRate(),
+                        unpredictableConf.getTableSize(),
+                        unpredictableConf.getNumberSize()
+                )
+        );
+
+        factory.createManagedObjects(
+                ManagedObjectCreator.createUnpredictableTableMIB(
+                        mapTable.getTable()
+                )
+        );
+    }
 
 }
