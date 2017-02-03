@@ -22,6 +22,7 @@ public class UnpredictableConf {
     private int tableSize;
     private int numberSize;
     private String firstSeedPath;
+    private String commandKey = "unpredictable-agent dfh8ty3t-4rq8549";
 
     public UnpredictableConf() {
     }
@@ -83,6 +84,14 @@ public class UnpredictableConf {
         this.firstSeedPath = firstSeedPath;
     }
 
+    public String getCommandKey() {
+        return commandKey;
+    }
+
+    public void setCommandKey(String commandKey) {
+        this.commandKey = commandKey;
+    }
+    
     public void parseConfFile(String filePath) throws FileNotFoundException, IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;

@@ -7,9 +7,7 @@ package com.project29.randomnumberssnmp.client;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import static java.util.Collections.list;
 import java.util.List;
-import static jdk.nashorn.internal.runtime.regexp.joni.Syntax.Java;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;

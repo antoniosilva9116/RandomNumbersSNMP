@@ -6,16 +6,14 @@
 package com.project29.randomnumberssnmp.client;
 
 import com.project29.randomnumberssnmp.conf.UnpredictableConf;
-import com.project29.randomnumberssnmp.server.ManagedObjectCreator;
 import com.project29.randomnumberssnmp.server.ManagedObjectFactory;
 import com.project29.randomnumberssnmp.server.SNMPAgent;
 import com.project29.randomnumberssnmp.ui.Interface;
-import com.project29.randomnumberssnmp.utils.HexToDecimal;
-import java.awt.Color;
 import java.io.IOException;
-import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import org.snmp4j.smi.OID;
 
 /**
@@ -42,18 +40,25 @@ public class Main {
 
         UNPREDICTABLE_CONF.parseConfFile(confFilePath);
 
-        agent = new SNMPAgent(ipAddress + UNPREDICTABLE_CONF.getUdpPort(), UNPREDICTABLE_CONF);
+        String command = (String) JOptionPane.showInputDialog(null, "Insert the comand to init the agent:", "Command", JOptionPane.PLAIN_MESSAGE, null, null, "localhost");
 
-        factory = ManagedObjectFactory.getInstance(agent);
+        if (Objects.equals(command, UNPREDICTABLE_CONF.getCommandKey())) {
 
-        try {
-            agent.start();
-        } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            agent = new SNMPAgent(ipAddress + UNPREDICTABLE_CONF.getUdpPort(), UNPREDICTABLE_CONF);
+
+            factory = ManagedObjectFactory.getInstance(agent);
+
+            try {
+                agent.start();
+            } catch (IOException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            new Thread(() -> {
+                new Interface(confFilePath).setVisible(true);
+            }).start();
+        } else{
+            JOptionPane.showMessageDialog(null, "Wrong command key", "Error Command keyF", JOptionPane.ERROR_MESSAGE);
         }
-
-        new Thread(() -> {
-            new Interface(confFilePath).setVisible(true);
-        }).start();
     }
 }
