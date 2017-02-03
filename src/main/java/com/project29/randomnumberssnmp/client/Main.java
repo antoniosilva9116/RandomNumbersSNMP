@@ -35,11 +35,14 @@ public class Main {
     static SNMPAgent agent;
     static Interface client;
 
+//    static String ipAddress = "193.137.92.72/";
+    static String ipAddress = "0.0.0.0/";
+
     public static void main(String[] args) throws IOException {
 
         UNPREDICTABLE_CONF.parseConfFile(confFilePath);
 
-        agent = new SNMPAgent("0.0.0.0/" + UNPREDICTABLE_CONF.getUdpPort(), UNPREDICTABLE_CONF);
+        agent = new SNMPAgent(ipAddress + UNPREDICTABLE_CONF.getUdpPort(), UNPREDICTABLE_CONF);
 
         factory = ManagedObjectFactory.getInstance(agent);
 
