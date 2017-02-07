@@ -202,6 +202,7 @@ public class SNMPAgent extends BaseAgent {
         run();
         sendColdStartNotification();
         createMIBs();
+        this.getSession().addCommandResponder(new ManagedObjectRequestListener());
     }
 
     /**

@@ -8,6 +8,8 @@ package com.project29.randomnumberssnmp.client;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
@@ -17,8 +19,10 @@ import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.smi.Address;
 import org.snmp4j.smi.GenericAddress;
+import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
+import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.snmp4j.util.DefaultPDUFactory;
@@ -129,6 +133,73 @@ public class SNMPManager {
 
     public static String extractSingleString(ResponseEvent event) {
         return event.getResponse().get(0).getVariable().toString();
+    }
+
+    public void snmpSet(OID oidSet, String value) {
+
+        TransportMapping transport = null;
+        try {
+            transport = new DefaultUdpTransportMapping();
+            transport.listen();
+        } catch (IOException ex) {
+            Logger.getLogger(SNMPManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        PDU pdu = new PDU();
+
+        // Setting the Oid and Value for sysContact variable
+        OID oid = new OID(oidSet);
+        Variable var = new OctetString(value);
+        VariableBinding varBind = new VariableBinding(oid, var);
+        pdu.add(varBind);
+
+        pdu.setType(PDU.SET);
+        pdu.setRequestID(new Integer32(1));
+
+        // Create Snmp object for sending data to Agent
+        Snmp snmp = new Snmp(transport);
+
+        System.out.println("\nRequest:\n[ Note: Set Request is sent for" + oidSet.toDottedString() + "oid in RFC 1213 MIB.");
+        System.out.println("Set operation will change the OID " + oidSet.toDottedString() + " value to " + value);
+        System.out.println("Once this operation is completed, Querying for sysContact will get the value = " + value + " ]");
+
+        System.out.println("Request:\nSending Snmp Set Request to Agent...");
+        ResponseEvent response = null;
+        try {
+            response = snmp.set(pdu, getTarget());
+        } catch (IOException ex) {
+            Logger.getLogger(SNMPManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        // Process Agent Response
+        if (response != null) {
+            System.out.println("\nResponse:\nGot Snmp Set Response from Agent");
+            PDU responsePDU = response.getResponse();
+
+            if (responsePDU != null) {
+                int errorStatus = responsePDU.getErrorStatus();
+                int errorIndex = responsePDU.getErrorIndex();
+                String errorStatusText = responsePDU.getErrorStatusText();
+
+                if (errorStatus == PDU.noError) {
+                    System.out.println("Snmp Set Response = " + responsePDU.getVariableBindings());
+                } else {
+                    System.out.println("Error: Request Failed");
+                    System.out.println("Error Status = " + errorStatus);
+                    System.out.println("Error Index = " + errorIndex);
+                    System.out.println("Error Status Text = " + errorStatusText);
+                }
+            } else {
+                System.out.println("Error: Response PDU is null");
+            }
+        } else {
+            System.out.println("Error: Agent Timeout... ");
+        }
+        try {
+            snmp.close();
+        } catch (IOException ex) {
+            Logger.getLogger(SNMPManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }
