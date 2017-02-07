@@ -42,23 +42,20 @@ public class Main {
 
         String command = (String) JOptionPane.showInputDialog(null, "Insert the comand to init the agent:", "Command", JOptionPane.PLAIN_MESSAGE, null, null, "localhost");
 
-        if (Objects.equals(command, UNPREDICTABLE_CONF.getCommandKey())) {
+        UNPREDICTABLE_CONF.setCommandKey(command);
 
-            agent = new SNMPAgent(ipAddress + UNPREDICTABLE_CONF.getUdpPort(), UNPREDICTABLE_CONF);
+        agent = new SNMPAgent(ipAddress + UNPREDICTABLE_CONF.getUdpPort(), UNPREDICTABLE_CONF);
 
-            factory = ManagedObjectFactory.getInstance(agent);
+        factory = ManagedObjectFactory.getInstance(agent);
 
-            try {
-                agent.start();
-            } catch (IOException ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-            new Thread(() -> {
-                new Interface(confFilePath).setVisible(true);
-            }).start();
-        } else{
-            JOptionPane.showMessageDialog(null, "Wrong command key", "Error Command keyF", JOptionPane.ERROR_MESSAGE);
+        try {
+            agent.start();
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        new Thread(() -> {
+            new Interface(confFilePath).setVisible(true);
+        }).start();
     }
 }

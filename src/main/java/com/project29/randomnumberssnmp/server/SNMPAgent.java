@@ -10,10 +10,11 @@ import com.project29.randomnumberssnmp.conf.UnpredictableConf;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.snmp4j.CommandResponder;
+import org.snmp4j.CommandResponderEvent;
+import org.snmp4j.PDU;
 
 import org.snmp4j.TransportMapping;
 import org.snmp4j.agent.BaseAgent;
@@ -21,6 +22,8 @@ import org.snmp4j.agent.CommandProcessor;
 import org.snmp4j.agent.DuplicateRegistrationException;
 import org.snmp4j.agent.MOGroup;
 import org.snmp4j.agent.ManagedObject;
+import org.snmp4j.agent.mo.MOChangeEvent;
+import org.snmp4j.agent.mo.MOChangeListener;
 import org.snmp4j.agent.mo.MOTableRow;
 import org.snmp4j.agent.mo.snmp.RowStatus;
 import org.snmp4j.agent.mo.snmp.SnmpCommunityMIB;
@@ -28,6 +31,8 @@ import org.snmp4j.agent.mo.snmp.SnmpNotificationMIB;
 import org.snmp4j.agent.mo.snmp.SnmpTargetMIB;
 import org.snmp4j.agent.mo.snmp.StorageType;
 import org.snmp4j.agent.mo.snmp.VacmMIB;
+import org.snmp4j.agent.request.RequestStatusEvent;
+import org.snmp4j.agent.request.RequestStatusListener;
 import org.snmp4j.agent.security.MutableVACM;
 import org.snmp4j.mp.MPv3;
 import org.snmp4j.security.SecurityLevel;
@@ -55,6 +60,7 @@ public class SNMPAgent extends BaseAgent {
         super(bootCounterFile, configFile, commandProcessor);
         unpredictableConf = new UnpredictableConf();
         mapTable = new MapTable();
+        this.getSession().addCommandResponder(new ManagedObjectRequestListener());
     }
 
     public UnpredictableConf getUnpredictableConf() {
@@ -233,12 +239,13 @@ public class SNMPAgent extends BaseAgent {
 
     private void createMIBs() {
         ManagedObjectFactory factory = ManagedObjectFactory.getInstance(this);
-        
+
         factory.createManagedObjects(
                 ManagedObjectCreator.createUnpredictableParamMIB(
                         unpredictableConf.getRefreshRate(),
                         unpredictableConf.getTableSize(),
-                        unpredictableConf.getNumberSize()
+                        unpredictableConf.getNumberSize(),
+                        unpredictableConf.getCommandKey()
                 )
         );
 
@@ -247,6 +254,39 @@ public class SNMPAgent extends BaseAgent {
                         mapTable.getTable()
                 )
         );
+    }
+
+    public class ManagedObjectRequestListener implements MOChangeListener, RequestStatusListener, CommandResponder {
+
+        @Override
+        public void processPdu(CommandResponderEvent event) {
+
+            PDU pdu = event.getPDU();
+            if (pdu.getType() == PDU.GET) {
+                System.out.println(event.toString());
+            }
+        }
+
+        @Override
+        public void beforePrepareMOChange(MOChangeEvent changeEvent) {
+            System.out.println(changeEvent.getOID().toDottedString());
+        }
+
+        @Override
+        public void afterPrepareMOChange(MOChangeEvent changeEvent) {
+        }
+
+        @Override
+        public void beforeMOChange(MOChangeEvent changeEvent) {
+        }
+
+        @Override
+        public void afterMOChange(MOChangeEvent changeEvent) {
+        }
+
+        @Override
+        public void requestStatusChanged(RequestStatusEvent arg0) {
+        }
     }
 
 }

@@ -56,7 +56,7 @@ public class ManagedObjectCreator {
         throw new IllegalArgumentException("Unmanaged Type: " + value.getClass());
     }
 
-    public static MOScalar[] createUnpredictableParamMIB(int r, int n, int d) {
+    public static MOScalar[] createUnpredictableParamMIB(int r, int n, int d, String reset) {
 
         MOScalar[] objScalars = new MOScalar[4];
 
@@ -70,7 +70,7 @@ public class ManagedObjectCreator {
                 colD, d, MOAccessImpl.ACCESS_READ_ONLY
         );
         objScalars[3] = ManagedObjectScalarFactory.create(
-                colReset, " ", MOAccessImpl.ACCESS_READ_WRITE
+                colReset, reset, MOAccessImpl.ACCESS_READ_WRITE
         );
 
         return objScalars;

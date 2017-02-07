@@ -22,7 +22,7 @@ public class UnpredictableConf {
     private int tableSize;
     private int numberSize;
     private String firstSeedPath;
-    private String commandKey = "unpredictable-agent dfh8ty3t-4rq8549";
+    private String commandKey;
 
     public UnpredictableConf() {
     }
@@ -34,6 +34,7 @@ public class UnpredictableConf {
         this.tableSize = tableSize;
         this.numberSize = numberSize;
         this.firstSeedPath = firstSeedPath;
+        commandKey = "unpredictable-agent dfh8ty3t-4rq8549";
     }
 
     public String getUdpPort() {
