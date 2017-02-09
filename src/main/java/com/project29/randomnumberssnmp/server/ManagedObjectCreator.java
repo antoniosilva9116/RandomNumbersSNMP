@@ -45,6 +45,10 @@ public class ManagedObjectCreator {
     public ManagedObjectCreator() {
     }
 
+    public static String getResetOID(){
+        return new OID(colReset).toString();
+    }
+    
     public ManagedObjectCreator(UnpredictableConf conf) {
         this.conf = conf;
     }

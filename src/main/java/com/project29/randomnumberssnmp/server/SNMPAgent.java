@@ -10,6 +10,9 @@ import com.project29.randomnumberssnmp.conf.UnpredictableConf;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.snmp4j.CommandResponder;
@@ -44,6 +47,7 @@ import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.Variable;
+import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.TransportMappings;
 
 /**
@@ -140,7 +144,7 @@ public class SNMPAgent extends BaseAgent {
                 "c" + unpredictableConf.getComunityString()), new OctetString("v1v2group"),
                 StorageType.nonVolatile);
 
-        vacm.addAccess(new OctetString("v1v2group"), new OctetString("public"),
+        vacm.addAccess(new OctetString("v1v2group"), new OctetString(unpredictableConf.getComunityString()),
                 SecurityModel.SECURITY_MODEL_ANY, SecurityLevel.NOAUTH_NOPRIV,
                 MutableVACM.VACM_MATCH_EXACT, new OctetString("fullReadView"),
                 new OctetString("fullWriteView"), new OctetString(
@@ -264,7 +268,27 @@ public class SNMPAgent extends BaseAgent {
 
             PDU pdu = event.getPDU();
             if (pdu.getType() == PDU.GET) {
-                System.out.println(event.toString());
+                System.out.println("GET: " + event.toString());
+            }
+
+            if (pdu.getType() == PDU.SET) {
+                System.out.println("SET: " + event.toString());
+                System.out.println("Object: " + pdu.getVariableBindings().toString());
+                
+                Vector<VariableBinding> variableBindingsList = (Vector<VariableBinding>) pdu.getVariableBindings();
+           
+                for (VariableBinding variableBinding : variableBindingsList) {
+                    System.out.println(variableBinding.toString());
+                    
+                    if(Objects.equals(variableBinding.getOid().toString(), ManagedObjectCreator.getResetOID())){
+                        if(Objects.equals(variableBinding.getVariable().toString(), unpredictableConf.getCommandKey())){
+                            System.out.println("Success");
+                            
+                            reset(address, "C:\\Users\\anton\\OneDrive\\Documentos\\NetBeansProjects\\RandomNumbersSNMP\\resource\\unpredictable-conf.txt");
+                        }
+                    }
+                }
+
             }
         }
 
